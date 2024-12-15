@@ -1,7 +1,3 @@
-// file thư viện
-import { v4 as uuidv4 } from "uuid";
-
-// danh sách các tỷ giá
 import jsonSource from "../input/input.json" assert { type: "json" };
 
 // file tự viết

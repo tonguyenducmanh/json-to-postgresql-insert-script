@@ -7,3 +7,7 @@ ví dụ input đầu vào ( có thể là 1 object hoặc 1 mảng object)
 kết quả trả về
 
 ![output](images/output.png)
+
+tên bảng và khóa chính sẽ được cấu hình ở file dưới
+
+![config](images/config.png)

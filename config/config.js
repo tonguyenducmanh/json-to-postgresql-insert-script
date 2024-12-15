@@ -1,6 +1,10 @@
 // file config dữ liệu
 
 export default {
+  // tên bảng cần insert
+  tableName: "sme.account_object",
+  // khóa chính của bảng
+  primaryKeyField: "account_object_id",
   // đường dẫn kết quả
   outputPath: "./output/result.txt",
   // đường dẫn kết quả

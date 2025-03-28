@@ -1,4 +1,4 @@
-import jsonSource from "../input/input.json" assert { type: "json" };
+import jsonSource from "../input/input.json" with { type: "json" };
 
 // file tự viết
 import { logFile, logFileWithOuputPath } from "./logFile.js";

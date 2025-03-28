@@ -19,4 +19,6 @@ export default {
   isLogInfo: true,
   // định dạng ngày tháng khi ghi log
   logLocation: "vn-VN",
+  // có muốn chạy hàm buildCreateTableScript không
+  enableCreateTable: true,
 };

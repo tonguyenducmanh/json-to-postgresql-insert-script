@@ -19,7 +19,7 @@ export async function convertToPostgresSQL() {
         await logFileWithOuputPath(script, config.outputGenScript);
       }
     }
-  } catch (error) {
+  }catch (error) {
     await logFile(error, "runTool");
   }
 }
@@ -28,13 +28,54 @@ export async function convertToPostgresSQL() {
  * build ra script insert dữ liệu
  * @param {array} source input cần build script
  */
+function buildCreateTableScript(source) {
+  let createTableScript = "";
+  if (source && Array.isArray(source) && config?.tableName) {
+    const samples = source.slice(0, 3); // Take the first 3 samples
+    const columns = Object.keys(samples[0]).map((key) => {
+      const isPrimaryKey = key === config.primaryKeyField;
+      const values = samples.map((record) => record[key]).filter((v) => v !== null);
+
+      let dataType = "TEXT"; // Default to TEXT
+      if (values.every((v) => typeof v === "number")) {
+        dataType = values.every((v) => Number.isInteger(v)) ? "INTEGER" : "REAL";
+      } else if (values.every((v) => typeof v === "boolean")) {
+        dataType = "BOOLEAN";
+      } else if (
+        values.every(
+          (v) =>
+            typeof v === "string" &&
+            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(v)
+        )
+      ) {
+        dataType = "UUID";
+      } else if (
+        values.every((v) => typeof v === "string" && !isNaN(Date.parse(v)))
+      ) {
+        dataType = "TIMESTAMP WITHOUT TIME ZONE";
+      }
+      return `"${key}" ${dataType}${isPrimaryKey ? " NOT NULL" : " NULL"}`;
+    });
+
+    const primaryKeyConstraint = config.primaryKeyField
+      ? `, PRIMARY KEY ("${config.primaryKeyField}")`
+      : "";
+
+    createTableScript = `CREATE TABLE IF NOT EXISTS ${config.tableName} (\n  ${columns.join(",\n  ")}${primaryKeyConstraint}\n);`;
+    }
+  return createTableScript;
+}
+
 function buildScriptPostgreSQLScript(source) {
   let script = "";
   if (source && Array.isArray(source)) {
+    let createTableScript = config.enableCreateTable
+      ? buildCreateTableScript(source)
+      : "";
     let deleteScript = buildDeleteAllScript(source);
     let insertScripts = buildInsertAllScript(source);
     if (deleteScript && insertScripts && Array.isArray(insertScripts)) {
-      let arrayScript = [deleteScript, ...insertScripts];
+      let arrayScript = [createTableScript, deleteScript, ...insertScripts];
       script = arrayScript.join(STRING_JOIN_BREAKLINE);
       if (script) {
         script += STRING_JOIN_BREAKLINE;

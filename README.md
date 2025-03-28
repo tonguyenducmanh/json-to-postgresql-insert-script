@@ -11,3 +11,7 @@ kết quả trả về
 tên bảng và khóa chính sẽ được cấu hình ở file dưới
 
 ![config](images/config.png)
+
+bổ sung script tạo bảng theo cấu hình trong file config nếu muốn
+
+![create table](<images/create table.png>)

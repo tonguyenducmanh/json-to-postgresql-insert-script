@@ -31,16 +31,16 @@ export async function convertToPostgresSQL() {
 function buildCreateTableScript(source) {
   let createTableScript = "";
   if (source && Array.isArray(source) && config?.tableName) {
-    const samples = source.slice(0, 3); // Take the first 3 samples
-    const columns = Object.keys(samples[0]).map((key) => {
-      const isPrimaryKey = key === config.primaryKeyField;
-      const values = samples.map((record) => record[key]).filter((v) => v !== null);
+    let samples = source.slice(0, 3); // Take the first 3 samples
+    let columns = Object.keys(samples[0]).map((key) => {
+      let isPrimaryKey = key === config.primaryKeyField;
+      let values = samples.map((record) => record[key]).filter((v) => v !== null);
 
-      let dataType = "TEXT"; // Default to TEXT
+      let dataType = "text"; // Default to text
       if (values.every((v) => typeof v === "number")) {
-        dataType = values.every((v) => Number.isInteger(v)) ? "INTEGER" : "REAL";
+        dataType = values.every((v) => Number.isInteger(v)) ? "integer" : "text";
       } else if (values.every((v) => typeof v === "boolean")) {
-        dataType = "BOOLEAN";
+        dataType = "boolean";
       } else if (
         values.every(
           (v) =>
@@ -48,20 +48,20 @@ function buildCreateTableScript(source) {
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(v)
         )
       ) {
-        dataType = "UUID";
+        dataType = "uuid";
       } else if (
         values.every((v) => typeof v === "string" && !isNaN(Date.parse(v)))
       ) {
-        dataType = "TIMESTAMP WITHOUT TIME ZONE";
+        dataType = "timestamp without time zone";
       }
-      return `"${key}" ${dataType}${isPrimaryKey ? " NOT NULL" : " NULL"}`;
+      return `${key} ${dataType}${isPrimaryKey ? " not null" : " null"}`;
     });
 
     const primaryKeyConstraint = config.primaryKeyField
-      ? `, PRIMARY KEY ("${config.primaryKeyField}")`
+      ? `, primary key ("${config.primaryKeyField}")`
       : "";
 
-    createTableScript = `CREATE TABLE IF NOT EXISTS ${config.tableName} (\n  ${columns.join(",\n  ")}${primaryKeyConstraint}\n);`;
+    createTableScript = `create table if not exists ${config.tableName} (\n  ${columns.join(",\n  ")}${primaryKeyConstraint}\n);`;
     }
   return createTableScript;
 }

@@ -50,7 +50,9 @@ function buildCreateTableScript(source) {
       ) {
         dataType = "uuid";
       } else if (
-        values.every((v) => typeof v === "string" && !isNaN(Date.parse(v)))
+        values.every(
+          (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(v)
+        )
       ) {
         dataType = "timestamp";
       }

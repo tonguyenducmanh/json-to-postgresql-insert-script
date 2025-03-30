@@ -52,7 +52,7 @@ function buildCreateTableScript(source) {
       } else if (
         values.every((v) => typeof v === "string" && !isNaN(Date.parse(v)))
       ) {
-        dataType = "timestamp without time zone";
+        dataType = "timestamp";
       }
       return `${key} ${dataType}${isPrimaryKey ? " not null" : " null"}`;
     });
